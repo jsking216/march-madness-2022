@@ -44,7 +44,7 @@ const getWinner = (round, team1, team2) => {
   if (team1.underdog >= team2.underdog || oddsRatio < 0.5) {
     const coinflip = Math.min(
       MAX_ODDS,
-      Math.max(0.1, team1.cumulativeOdds - team2.cumulativeOdds) +
+      Math.min(0.5, team1.cumulativeOdds / team2.cumulativeOdds) +
         team1.underdog * round * 0.03
     );
 
@@ -55,7 +55,7 @@ const getWinner = (round, team1, team2) => {
   } else {
     const coinflip = Math.min(
       MAX_ODDS,
-      Math.max(0.1, team2.cumulativeOdds - team1.cumulativeOdds) +
+      Math.min(0.5, team2.cumulativeOdds / team1.cumulativeOdds) +
         team2.underdog * round * 0.03
     );
     console.log(
