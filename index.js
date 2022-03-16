@@ -40,16 +40,18 @@ const getWinner = (round, team1, team2) => {
   const oddsRatio = team1.cumulativeOdds / team2.cumulativeOdds;
 
   // this is just a mess
+  const rand = Math.random();
   if (team1.underdog >= team2.underdog || oddsRatio < 0.5) {
     const coinflip = Math.min(
       MAX_ODDS,
       Math.max(0.1, team1.cumulativeOdds - team2.cumulativeOdds) +
         team1.underdog * round * 0.03
     );
+
     console.log(
-      `coinflip for ${team1.team_name} with underdog bonus: ${coinflip}`
+      `coinflip for ${team1.team_name} with underdog bonus: ${coinflip} vs random ${rand}`
     );
-    winner = coinflip >= Math.random() ? team1 : team2;
+    winner = coinflip >= rand ? team1 : team2;
   } else {
     const coinflip = Math.min(
       MAX_ODDS,
@@ -57,9 +59,9 @@ const getWinner = (round, team1, team2) => {
         team2.underdog * round * 0.03
     );
     console.log(
-      `coinflip for ${team2.team_name} with underdog bonus: ${coinflip}`
+      `coinflip for ${team2.team_name} with underdog bonus: ${coinflip} vs random ${rand}`
     );
-    winner = coinflip >= Math.random() ? team2 : team1;
+    winner = coinflip >= rand ? team2 : team1;
   }
 
   return winner;
