@@ -18,37 +18,47 @@ const roundColumn = (round) => `rd${round}_win`;
 // use 538 probability + randomness + some bonus for underdog
 const getWinner = (round, team1, team2) => {
   // 538 includes playin as rd1 so we need an offset of 2 to start at 0!
-  const team1BaseOdds = team1[roundColumn(round + 2)];
-  const team2BaseOdds = team2[roundColumn(round + 2)];
+  const team1BaseOdds = parseFloat(team1[roundColumn(round + 2)]);
+  const team2BaseOdds = parseFloat(team2[roundColumn(round + 2)]);
 
-  team1.cumulativeOdds = (team1.cumulativeOdds || 0) + team1BaseOdds;
-  team2.cumulativeOdds = (team2.cumulativeOdds || 0) + team2BaseOdds;
+  team1.cumulativeOdds =
+    parseFloat(team1.cumulativeOdds || 0) + parseFloat(team1BaseOdds);
+  team2.cumulativeOdds =
+    parseFloat(team2.cumulativeOdds || 0) + parseFloat(team2BaseOdds);
   team1.underdog = team1.underdog || 0;
   team2.underdog = team2.underdog || 0;
 
   // screwed this up the first time since lower is better
-  if (team1[SEED_COLUMN] < team2[SEED_COLUMN] - 1) {
+  if (parseInt(team1[SEED_COLUMN]) < parseInt(team2[SEED_COLUMN]) - 1) {
     team2.underdog += 1;
-  } else if (team2[SEED_COLUMN] < team1[SEED_COLUMN] - 1) {
+  } else if (parseInt(team2[SEED_COLUMN]) < parseInt(team1[SEED_COLUMN]) - 1) {
     team1.underdog += 1;
   }
 
   // make assumption based on underdog
   let winner = undefined;
   const oddsRatio = team1.cumulativeOdds / team2.cumulativeOdds;
-  if (team1.underdog >= team2.underdog || oddsRatio < 10) {
+
+  // this is just a mess
+  if (team1.underdog >= team2.underdog || oddsRatio < 0.5) {
     const coinflip = Math.min(
       MAX_ODDS,
-      team1.cumulativeOdds + team1.underdog * round * 0.03
+      Math.max(0.1, team1.cumulativeOdds - team2.cumulativeOdds) +
+        team1.underdog * round * 0.03
     );
-    console.log(`coinflip for ${team1.team_name} as underdog: ${coinflip}`);
+    console.log(
+      `coinflip for ${team1.team_name} with underdog bonus: ${coinflip}`
+    );
     winner = coinflip >= Math.random() ? team1 : team2;
   } else {
     const coinflip = Math.min(
       MAX_ODDS,
-      team2.cumulativeOdds + team2.underdog * round * 0.05
+      Math.max(0.1, team2.cumulativeOdds - team1.cumulativeOdds) +
+        team2.underdog * round * 0.03
     );
-    console.log(`coinflip for ${team2.team_name} as underdog: ${coinflip}`);
+    console.log(
+      `coinflip for ${team2.team_name} with underdog bonus: ${coinflip}`
+    );
     winner = coinflip >= Math.random() ? team2 : team1;
   }
 
