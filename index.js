@@ -17,9 +17,12 @@ const roundColumn = (round) => `rd${round}_win`;
 
 // use 538 probability + randomness + some bonus for underdog
 const getWinner = (round, team1, team2) => {
-  const team1BaseOdds = team1[roundColumn(round + 1)];
-  const team2BaseOdds = team2[roundColumn(round + 1)];
+  // 538 includes playin as rd1 so we need an offset of 2 to start at 0!
+  const team1BaseOdds = team1[roundColumn(round + 2)];
+  const team2BaseOdds = team2[roundColumn(round + 2)];
 
+  team1.cumulativeOdds = (team1.cumulativeOdds || 0) + team1BaseOdds;
+  team2.cumulativeOdds = (team2.cumulativeOdds || 0) + team2BaseOdds;
   team1.underdog = team1.underdog || 0;
   team2.underdog = team2.underdog || 0;
 
@@ -32,18 +35,21 @@ const getWinner = (round, team1, team2) => {
 
   // make assumption based on underdog
   let winner = undefined;
-  if (team1.underdog >= team2.underdog) {
-    winner =
-      Math.min(MAX_ODDS, team1BaseOdds + team1.underdog * round * 0.05) >=
-      Math.random()
-        ? team1
-        : team2;
+  const oddsRatio = team1.cumulativeOdds / team2.cumulativeOdds;
+  if (team1.underdog >= team2.underdog || oddsRatio < 10) {
+    const coinflip = Math.min(
+      MAX_ODDS,
+      team1.cumulativeOdds + team1.underdog * round * 0.03
+    );
+    console.log(`coinflip for ${team1.team_name} as underdog: ${coinflip}`);
+    winner = coinflip >= Math.random() ? team1 : team2;
   } else {
-    winner =
-      Math.min(MAX_ODDS, team2BaseOdds + team2.underdog * round * 0.05) >=
-      Math.random()
-        ? team2
-        : team1;
+    const coinflip = Math.min(
+      MAX_ODDS,
+      team2.cumulativeOdds + team2.underdog * round * 0.05
+    );
+    console.log(`coinflip for ${team2.team_name} as underdog: ${coinflip}`);
+    winner = coinflip >= Math.random() ? team2 : team1;
   }
 
   return winner;
@@ -75,5 +81,5 @@ const doTourny = (data, rounds) => {
   const jsonArray = await csv().fromFile(CSV_FILE_PATH);
 
   jsonArray.sort((a, b) => sortData(a, b));
-  doTourny(jsonArray, 7);
+  doTourny(jsonArray, 6);
 })();
