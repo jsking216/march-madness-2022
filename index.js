@@ -62,7 +62,7 @@ const doTourny = (data, rounds) => {
   let currentRound = undefined;
   for (let i = 0; i < rounds; i++) {
     const currentData = currentRound || data;
-    currentRound = doRound(round, currentData);
+    currentRound = doRound(i, currentData);
   }
 };
 
@@ -70,5 +70,5 @@ const doTourny = (data, rounds) => {
   const jsonArray = await csv().fromFile(CSV_FILE_PATH);
 
   jsonArray.sort((a, b) => sortData(a, b));
-  doTourny(7);
+  doTourny(jsonArray, 7);
 })();
