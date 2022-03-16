@@ -17,15 +17,16 @@ const roundColumn = (round) => `rd${round}_win`;
 
 // use 538 probability + randomness + some bonus for underdog
 const getWinner = (round, team1, team2) => {
-  const team1BaseOdds = team1[roundColumn(round)];
-  const team2BaseOdds = team2[roundColumn(round)];
+  const team1BaseOdds = team1[roundColumn(round + 1)];
+  const team2BaseOdds = team2[roundColumn(round + 1)];
 
   team1.underdog = team1.underdog || 0;
   team2.underdog = team2.underdog || 0;
 
-  if (team1[SEED_COLUMN] > team2[SEED_COLUMN] + 1) {
+  // screwed this up the first time since lower is better
+  if (team1[SEED_COLUMN] < team2[SEED_COLUMN] - 1) {
     team2.underdog += 1;
-  } else if (team2[SEED_COLUMN] > team1[SEED_COLUMN] + 1) {
+  } else if (team2[SEED_COLUMN] < team1[SEED_COLUMN] - 1) {
     team1.underdog += 1;
   }
 
@@ -33,13 +34,13 @@ const getWinner = (round, team1, team2) => {
   let winner = undefined;
   if (team1.underdog >= team2.underdog) {
     winner =
-      Math.min(1, team1BaseOdds + team1.underdog * round * 0.05) >=
+      Math.min(MAX_ODDS, team1BaseOdds + team1.underdog * round * 0.05) >=
       Math.random()
         ? team1
         : team2;
   } else {
     winner =
-      Math.min(1, team2BaseOdds + team2.underdog * round * 0.05) >=
+      Math.min(MAX_ODDS, team2BaseOdds + team2.underdog * round * 0.05) >=
       Math.random()
         ? team2
         : team1;
@@ -54,7 +55,11 @@ const doRound = (round, teams) => {
     const winner = getWinner(round, teams[i], teams[i + 1]);
     winners.push(winner);
   }
-  console.log(`Winners for round ${round}`, JSON.stringify(winners));
+
+  const printRow = `Winners for round ${round}: ${winners
+    .map((x) => x.team_name)
+    .join(", ")}`;
+  console.log(printRow);
   return winners;
 };
 
