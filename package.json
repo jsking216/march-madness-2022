@@ -1,0 +1,29 @@
+{
+  "name": "march-madness-2022",
+  "version": "1.0.0",
+  "description": "march madness bracket generator",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write .",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsking216/march-madness-2022.git"
+  },
+  "keywords": [
+    "march",
+    "madness",
+    "2022"
+  ],
+  "author": "Joshua King",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jsking216/march-madness-2022/issues"
+  },
+  "homepage": "https://github.com/jsking216/march-madness-2022#readme",
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "prettier": "^2.5.1"
+  }
+}

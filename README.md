@@ -1,2 +1,3 @@
 # march-madness-2022
-Typescript app for march madness 2022 bracket
+
+Node app for march madness 2022 bracket
